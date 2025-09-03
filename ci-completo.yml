@@ -1,0 +1,42 @@
+name: CI Completo
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Passo 1: Pegar o código
+      - name: Checkout do código
+        uses: actions/checkout@v3
+
+      # Passo 2: Configurar Node.js
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Passo 3: Instalar dependências
+      - name: Instalar dependências
+        run: npm install
+
+      # Passo 4: Rodar testes
+      - name: Rodar testes
+        run: npm test
+
+      # Passo 5: Usar secret para deploy ou API
+      - name: Testar secret
+        run: |
+          if [ -z "${{ secrets.MY_API_TOKEN }}" ]; then
+            echo "Secret NÃO encontrado!"
+            exit 1
+          else
+            echo "Secret pegou corretamente!"
+            # Exemplo de uso seguro do token:
+            # curl -H "Authorization: Bearer ${{ secrets.MY_API_TOKEN }}" https://minhaapi.com/deploy
+          fi
